@@ -1,0 +1,331 @@
+openapi: 3.0.0
+info:
+  title: Dynap data models
+  description: Definitions and specifications of the models used for Dynap project.
+
+  contact:
+    email: davaadorj.battulga@u-hopper.com
+  version: 0.1.0
+
+
+
+paths:
+  /migrate/{id}:
+    post:
+      summary: Migrates a job to another agent.
+      tags:
+        - migration
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the job.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+            examples:
+              application/json:
+                value:
+                  migration_address: "localhost"
+      responses:
+        "200":
+          description: The details of the Job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployedJob'
+
+  /job:
+    post:
+      summary: Create a new Job.
+      tags:
+        - job
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                data:
+                  type: object
+                  $ref: '#/components/schemas/Job'
+      responses:
+        '201':
+          description: Job created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployedJob'
+    get:
+      tags:
+        - job
+      summary: List Jobs.
+      responses:
+        "200":
+          description: The list of Deployed Jobs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeployedJob'
+  /job/{id}:
+    get:
+      tags:
+        - job
+      summary: Get the details of a Job.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the job.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The details of the Job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployedJob'
+    put:
+      tags:
+        - job
+      summary: Update an existing Job.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the Job.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployedJob'
+      responses:
+        "202":
+          description: Job updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeployedJob'
+    delete:
+      tags:
+        - job
+      summary: Delete a Job.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the Job.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfull deletion.
+          content:
+            application/json:
+              example: {}
+
+  /client:
+    post:
+      summary: Create a new Client.
+      tags:
+        - client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        '201':
+          description: Client created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+    get:
+      tags:
+        - client
+      summary: List Clients.
+      responses:
+        "200":
+          description: The list of Clients.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+  /client/{id}:
+    get:
+      tags:
+        - client
+      summary: Get the details of a Client.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the Client.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The details of the Client.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+    #    put:
+    #      tags:
+    #        - client
+    #      summary: Update an existing Client.
+    #      parameters:
+    #        - name: id
+    #          in: path
+    #          description: The identifier of the Client.
+    #          required: true
+    #          schema:
+    #            type: string
+    #      requestBody:
+    #        content:
+    #          application/json:
+    #            schema:
+    #              $ref: '#/components/schemas/Client'
+    #      responses:
+    #        "202":
+    #          description: Client updated
+    #          content:
+    #            application/json:
+    #              schema:
+    #                $ref: '#/components/schemas/Client'
+    delete:
+      tags:
+        - client
+      summary: Delete a Client.
+      parameters:
+        - name: id
+          in: path
+          description: The identifier of the Client.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfull deletion.
+          content:
+            application/json:
+              example: {}
+
+components:
+  schemas:
+
+    Stream:
+      type: object
+      description: The attributes of a job.
+      properties:
+        address:
+          type: string
+          example: "192.168.1.1"
+        topic:
+          type: string
+          example: "T-1"
+
+    Job:
+      type: object
+      description: The job model.
+      properties:
+        job_name:
+          type: string
+          description: The name of a job.
+          example: "A_JOB"
+        agent_address:
+          type: string
+          description: The agent address of the job.
+          example: "localhost"
+        entry_class:
+          type: string
+          description: The entry class of a job.
+          example: "package.entryclass"
+        upstream:
+          type: array
+          description: The upward stream connections of the job.
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Stream'
+        downstream:
+          type: array
+          description: The downward stream connections of the job.
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Stream'
+
+    DeployedJob:
+      type: object
+      description: The deployed job model.
+      properties:
+        job_id:
+          type: string
+          description: The job id assigned by SPE.
+          example: "z"
+        jar_id:
+          type: string
+          description: The job jar id assigned by SPE.
+          example: "x"
+        jar_name:
+          type: string
+          description: The uuid jarname assigned by the agent.
+          example: "y"
+        job_name:
+          type: string
+          description: The name of a job.
+          example: "A_JOB"
+        agent_address:
+          type: string
+          description: The agent address of the job.
+          example: "localhost"
+        entry_class:
+          type: string
+          description: The entry class of a job.
+          example: "package.entryclass"
+        upstream:
+          type: array
+          description: The upward stream connections of the job.
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Stream'
+        downstream:
+          type: array
+          description: The downward stream connections of the job.
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Stream'
+    Client:
+      type: object
+      description: The MQTT client model.
+      properties:
+        client_id:
+          type: string
+          description: The unique id of a client.
+          example: "x"
+        agent_address:
+          type: string
+          description: The local host broker address of the client running on
+          example: "192.168.1.1"
+        topic:
+          type: string
+          description: The topic of a client publishing/subscribing to.
+          example: "T-1"
+        sink_address:
+          type: string
+          description: The sink/downstream address of the client.
+          example: "192.168.1.2"

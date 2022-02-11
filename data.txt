@@ -1,0 +1,17 @@
+{
+  "job_name": "A_JOB",
+  "agent_address": "192.168.1.3",
+  "entry_class": "agentpackage.MultiSourceTest",
+  "upstream": [
+    {
+      "address": "192.168.1.3",
+      "topic": "T-1"
+    }
+  ],
+  "downstream": [
+    {
+      "address": "10.93.0.152",
+      "topic": "T-2"
+    }
+  ]
+}

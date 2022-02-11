@@ -1,0 +1,102 @@
+version: '3.4'
+
+services:
+
+#  job-handler:
+#    build: .
+#    volumes:
+#      - .:/app
+#      - ./jars:/jars
+#      - ./config:/config
+#    ports:
+#      - 5001:5000
+
+  jobmanager:
+    image: public.registry.u-hopper.com/flink:1.11.3
+    # image: flink:1.11.3
+    # image: digitaljazz/flink-1.11.3-armv7:latest # for armv7
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    # command: jobmanager.sh start-foreground jobmanager # for armv7
+    volumes:
+      - ./config/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml:ro
+      - ./config/flink-metrics-prometheus-1.11.3.jar:/opt/flink/lib/flink-metrics-prometheus-1.11.3.jar
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+
+  taskmanager:
+    image: public.registry.u-hopper.com/flink:1.11.3
+    # image: digitaljazz/flink-1.11.3-armv7:latest # for armv7
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    # command: taskmanager.sh start-foreground -Djobmanager.rpc.address=jobmanager # for armv7
+    volumes:
+      - ./config/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml:ro
+      - ./config/flink-metrics-prometheus-1.11.3.jar:/opt/flink/lib/flink-metrics-prometheus-1.11.3.jar
+    #scale: 1
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+
+  prometheus:
+    image: public.registry.u-hopper.com/prometheus:latest
+    # image: prom/prometheus:latest
+    user: root
+    container_name: prometheus
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+
+  node-exporter:
+    image: public.registry.u-hopper.com/prom/node-exporter
+    # image: prom/node-exporter
+    ports:
+      - '9110:9100'
+
+  cadvisor:
+    image: public.registry.u-hopper.com/google/cadvisor
+    # image: google/cadvisor:latest
+    # image: budry/cadvisor-arm # for armv7
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - '8080:8080'
+
+  mosquitto:
+    image: public.registry.u-hopper.com/eclipse-mosquitto
+    # image: eclipse-mosquitto
+    hostname: mosquitto
+    container_name: mosquitto
+    expose:
+      - "1883"
+      - "9001"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  mongodb:
+    image: mongo:3.6
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - ./config/mongo/:/docker-entrypoint-initdb.d/:ro
+    ports:
+      - 23456:27017
+      - 9230:9229
+
