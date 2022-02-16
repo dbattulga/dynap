@@ -89,7 +89,8 @@ services:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
   mongodb:
-    image: mongo:3.6
+    image: public.registry.u-hopper.com/mongo:3.6
+    # image: mongo:3.6
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
