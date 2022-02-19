@@ -1,7 +1,7 @@
 import sys
 
 
-f = open("controller/config/hosts-list.txt", "a")
+f = open("hosts.txt", "a")
 host = sys.argv[1]
 f.write(host+"\n")
 f.close()
