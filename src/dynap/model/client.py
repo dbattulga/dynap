@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import logging
 
-logger = logging.getLogger("dynap.model")
+logger = logging.getLogger("dynap.model.client")
 
 
 @dataclass

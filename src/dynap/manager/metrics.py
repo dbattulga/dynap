@@ -4,7 +4,7 @@ import logging
 import requests
 from dynap.dao.collector import DaoCollector
 
-logger = logging.getLogger("dynap.model")
+logger = logging.getLogger("dynap.manager.metrics")
 
 
 class MetricsManager:

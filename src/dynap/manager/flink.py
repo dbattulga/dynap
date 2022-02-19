@@ -6,7 +6,7 @@ import requests
 import os
 from dynap.dao.collector import DaoCollector
 
-logger = logging.getLogger("dynap.model")
+logger = logging.getLogger("dynap.manager.flink")
 
 
 class FlinkManager:

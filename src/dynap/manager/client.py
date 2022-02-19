@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 from dynap.dao.collector import DaoCollector
 from dynap.model.client import Client
 
-logger = logging.getLogger("dynap.model")
+logger = logging.getLogger("dynap.manager.client")
 
 
 class ClientManager:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import logging
 from typing import List
 
-logger = logging.getLogger("dynap.model")
+logger = logging.getLogger("dynap.model.job")
 
 
 @dataclass
