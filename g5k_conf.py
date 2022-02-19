@@ -68,8 +68,8 @@ conf = (
     Configuration
         .from_settings(
         job_type="allow_classic_ssh",
-        job_name="QTestJob",
-        walltime='2:00:00'
+        job_name="RTestJob",
+        walltime='00:30:00'
         #env_name="/grid5000/images/debian9-x64-base-2020032721.tgz"
     )
         #.add_network_conf(network_rennes)
@@ -149,13 +149,13 @@ run_command("sudo chmod +x /usr/local/bin/docker-compose", roles=roles)
 
 #pull and run Dynap
 run_command("rm -rf dynap", roles=roles)
-run_command("git clone https://github.com/jazz09/dynap_agent.git", roles=roles)
+run_command("git clone https://github.com/jazz09/dynap.git", roles=roles)
 
 for i in range(0, len(roles["control"])):
     ui_address = roles["control"][i].address
-    run_command("cd dynap_agent/ && python write_hosts.py %s" % ui_address, roles=roles)
+    run_command("cd dynap/ && python write_hosts.py %s" % ui_address, roles=roles)
 
-run_command("cd dynap_agent/controller/ && docker-compose up -d", roles=roles)
-run_command("cat dynap_agent/controller/config/hosts-list.txt", roles=roles)
+run_command("cd dynap/ && docker-compose up -d", roles=roles)
+run_command("cat dynap/hosts.txt", roles=roles)
 
 #provider.destroy()
