@@ -68,7 +68,7 @@ conf = (
     Configuration
         .from_settings(
         job_type="allow_classic_ssh",
-        job_name="TTestJob",
+        job_name="VTestJob",
         walltime='00:30:00'
         #env_name="/grid5000/images/debian9-x64-base-2020032721.tgz"
     )
@@ -83,7 +83,7 @@ conf = (
         .add_machine(
             roles=["control"],
             cluster="paravance",
-            nodes=3,
+            nodes=2,
             primary_network=network_rennes
         )
         # .add_machine(
@@ -155,7 +155,7 @@ for i in range(0, len(roles["control"])):
     ui_address = roles["control"][i].address
     run_command("cd dynap/ && python write_hosts.py %s" % ui_address, roles=roles)
 
-run_command("cd dynap/ && docker-compose up -d", roles=roles)
+run_command("cd dynap/ && docker-compose build && docker-compose up -d", roles=roles)
 run_command("cat dynap/hosts.txt", roles=roles)
 
 #provider.destroy()
