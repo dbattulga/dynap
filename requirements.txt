@@ -1,7 +1,8 @@
-Flask==1.1.4
+Flask==1.1.2
 flask-restful==0.3.8
 markdown==3.2.1
 requests==2.23.0
 paho-mqtt==1.6.1
 pymongo==4.0.1
 gunicorn==20.1.0
+itsdangerous==2.0.1

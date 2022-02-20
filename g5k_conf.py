@@ -68,7 +68,7 @@ conf = (
     Configuration
         .from_settings(
         job_type="allow_classic_ssh",
-        job_name="VTestJob",
+        job_name="WTestJob",
         walltime='00:30:00'
         #env_name="/grid5000/images/debian9-x64-base-2020032721.tgz"
     )
