@@ -98,6 +98,6 @@ services:
     volumes:
       - ./config/mongo/:/docker-entrypoint-initdb.d/:ro
     ports:
-      - 23456:27017
+      - 27017:27017
       - 9230:9229
 

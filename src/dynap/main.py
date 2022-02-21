@@ -1,6 +1,7 @@
 from __future__ import absolute_import, annotations
 
 import logging.config
+import os
 
 from dynap.common.logging import get_logging_configuration
 from dynap.dao.collector import DaoCollectorBuilder
@@ -12,9 +13,9 @@ logger = logging.getLogger("dynap.main")
 
 
 def init_ws() -> WsInterface:
-    mongo_db_host = "localhost"
-    #mongo_db_port = 27017
-    mongo_db_port = 23456
+    #mongo_db_host = "localhost"
+    mongo_db_host = os.getenv("MONGODB_HOST")
+    mongo_db_port = 27017
     mongo_db_username = "admin"
     mongo_db_password = "admin"
     mongo_db_database = "dynap"

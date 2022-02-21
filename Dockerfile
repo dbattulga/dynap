@@ -12,6 +12,7 @@ WORKDIR /app/src
 
 ENV FLASK_APP /app/src/dynap/main
 ENV JOB_PATH /app/jars
+ENV MONGODB_HOST "mongodb"
 CMD ["flask", "run",  "--host=0.0.0.0"]
 
 #ENV PYTHONPATH /app
