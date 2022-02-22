@@ -54,7 +54,8 @@ class JobInterface(Resource):
                     "topic": upstream.topic,
                     "sink_address": job.agent_address
                 }
-                requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
+                if upstream.address != job.agent_address:
+                    requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
 
             for downstream in job.downstream:
                 sink_topic.append(downstream.topic)
@@ -64,7 +65,8 @@ class JobInterface(Resource):
                     "topic": downstream.topic,
                     "sink_address": downstream.address
                 }
-                requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+                if downstream.address != job.agent_address:
+                    requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
             #print(source_topic)
             #print(sink_topic)
