@@ -2,28 +2,28 @@
 jobs:
 
   - job_name: A_job
-    agent_address: paravance-16.rennes.grid5000.fr
-    upstream_broker: [paravance-16.rennes.grid5000.fr]
+    agent_address: paravance-10.rennes.grid5000.fr
+    upstream_broker: [paravance-10.rennes.grid5000.fr]
     upstream_topic: [T-0]
-    downstream_broker: [paravance-21.rennes.grid5000.fr]
+    downstream_broker: [paravance-19.rennes.grid5000.fr]
     downstream_topic: [T-1]
     entry_class: agentpackage.MultiSourceTest
     job_path: flinktest-1.jar
 
   - job_name: B_job
-    agent_address: paravance-21.rennes.grid5000.fr
-    upstream_broker: [paravance-16.rennes.grid5000.fr]
+    agent_address: paravance-19.rennes.grid5000.fr
+    upstream_broker: [paravance-10.rennes.grid5000.fr]
     upstream_topic: [T-1]
-    downstream_broker: [paravance-22.rennes.grid5000.fr]
+    downstream_broker: [paravance-2.rennes.grid5000.fr]
     downstream_topic: [T-2]
     entry_class: agentpackage.MultiSourceTest
     job_path: flinktest-1.jar
 
   - job_name: C_job
-    agent_address: paravance-22.rennes.grid5000.fr
-    upstream_broker: [paravance-21.rennes.grid5000.fr]
+    agent_address: paravance-2.rennes.grid5000.fr
+    upstream_broker: [paravance-19.rennes.grid5000.fr]
     upstream_topic: [T-2]
-    downstream_broker: [paravance-22.rennes.grid5000.fr]
+    downstream_broker: [paravance-2.rennes.grid5000.fr]
     downstream_topic: [T-3]
     entry_class: agentpackage.MultiSourceTest
     job_path: flinktest-1.jar
