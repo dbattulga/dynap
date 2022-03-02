@@ -38,11 +38,13 @@ class MigrationInterface(Resource):
             for upstream in job.upstream:
                 client_id = Client.build_name(upstream.topic)
                 requests.delete(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client/" + client_id)
+
+            requests.delete(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/job/" + job.job_id)
+            file_path = Common.JOB_PATH + "/" + job.jar_name
+
             for downstream in job.downstream:
                 client_id = Client.build_name(downstream.topic)
                 requests.delete(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client/" + client_id)
-            requests.delete(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/job/" + job.job_id)
-            file_path = Common.JOB_PATH + "/" + job.jar_name
 
             data = Job.to_repr(job)
             data["agent_address"] = migration_address
