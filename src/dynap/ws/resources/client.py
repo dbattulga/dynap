@@ -112,9 +112,10 @@ class ClientInterfaceId(Resource):
     def delete(self, client_id):
         logger.info(f"Deleting the mqtt client [{client_id}]")
         client = mqtt.Client(client_id, clean_session=False)
-        mqtt_client = self._dao_collector.client_dao.get(client_id)
-        client.connect(mqtt_client.agent_address)
-        client.on_disconnect = ClientManager.on_disconnect
+        # mqtt_client = self._dao_collector.client_dao.get(client_id)
+        client.disconnect()
+        # client.connect(mqtt_client.agent_address)
+        # client.on_disconnect = ClientManager.on_disconnect
         client.loop_stop()
         self._dao_collector.client_dao.delete(client_id)
         return {}, 200
