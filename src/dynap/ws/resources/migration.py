@@ -33,7 +33,7 @@ class MigrationInterface(Resource):
 
         try:
             migration_address = json_data.get("migration_address")
-
+            # TODO mutex endpoint will trigger here
             job = self._dao_collector.job_dao.get(job_id)
             for upstream in job.upstream:
                 client_id = Client.build_name(upstream.topic)
