@@ -6,9 +6,12 @@ import requests
 from flask import request
 from flask_restful import Resource
 from dynap.dao.collector import DaoCollector
+from dynap.manager.section import CriticalSectionManager
 from dynap.model.client import Client
 from dynap.model.common import Common
 from dynap.model.job import Job
+from dynap.model.section import CriticalSection
+from dynap.model.update_stream import UpdateStream
 
 logger = logging.getLogger("dynap.ws.resources.migration")
 
@@ -20,6 +23,7 @@ class MigrationInterfaceBuilder:
         return [
             (MigrationInterface, "/<string:job_id>", (dao_collector,))
         ]
+
 
 class MigrationInterface(Resource):
 
@@ -33,8 +37,38 @@ class MigrationInterface(Resource):
 
         try:
             migration_address = json_data.get("migration_address")
-            # TODO mutex endpoint will trigger here
             job = self._dao_collector.job_dao.get(job_id)
+
+            # SET OUR JOB AS ENTERING CS
+            job.requesting_cs = True
+            self._dao_collector.job_dao.update(job)
+
+            # GET OUR SEQUENCE NUMBER
+            our_sequence_number = CriticalSectionManager.get_max_sequence_number(self._dao_collector, job.job_name)
+            our_sequence_number += 1
+
+            # REQUESTING CS FROM DS AND US
+            for upstream in job.upstream:
+                cs_upstream = CriticalSection(
+                    job_name=job.job_name,
+                    agent_address=job.agent_address,
+                    sequence_number=our_sequence_number,
+                    topic=upstream.topic
+                )
+                req = requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/section", json=json.dumps(cs_upstream.to_repr()))
+                print(req)
+
+            for downstream in job.downstream:
+                cs_downstream = CriticalSection(
+                    job_name=job.job_name,
+                    agent_address=job.agent_address,
+                    sequence_number=our_sequence_number,
+                    topic=downstream.topic
+                )
+                req = requests.post(Common.HTTP + downstream.address + Common.AGENT_PORT + "/section", json=json.dumps(cs_downstream.to_repr()))
+                print(req)
+
+            # DELETE US DS FORWARDERS AND STOP OUR JOB
             for upstream in job.upstream:
                 client_id = Client.build_name(upstream.topic)
                 requests.delete(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client/" + client_id)
@@ -46,6 +80,7 @@ class MigrationInterface(Resource):
                 client_id = Client.build_name(downstream.topic)
                 requests.delete(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client/" + client_id)
 
+            # PREPARE THE MIGRATION REQUEST
             data = Job.to_repr(job)
             data["agent_address"] = migration_address
             url = Common.HTTP + migration_address + Common.AGENT_PORT + "/job"
@@ -54,8 +89,24 @@ class MigrationInterface(Resource):
             ]
             req = requests.post(url, files=files, data={"data": json.dumps(data)})
             print(req)
-
             os.remove(file_path)
+
+            # REDIRECTING US/DS WITH MIGRATING ADDRESS
+            for downstream in job.downstream:
+                update_data_ds = UpdateStream(
+                    agent_address=migration_address,
+                    topic=downstream.topic
+                )
+                req = requests.post(Common.HTTP + downstream.address + Common.AGENT_PORT + "/update", json=json.dumps(update_data_ds.to_repr()))
+                print(req)
+            for upstream in job.upstream:
+                update_data_us = UpdateStream(
+                    agent_address=migration_address,
+                    topic=upstream.topic
+                )
+                req = requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/update", json=json.dumps(update_data_us.to_repr()))
+                print(req)
+
         except (ValueError, KeyError) as e:
             logger.debug("Could not parse provided job data.", exc_info=e)
             return {

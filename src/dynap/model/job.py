@@ -11,18 +11,24 @@ logger = logging.getLogger("dynap.model.job")
 class Stream:
     address: str
     topic: str
+    sequence_number: int = 0
+    requesting_cs: bool = False
 
     def to_repr(self) -> dict:
         return {
             "address": self.address,
-            "topic": self.topic
+            "topic": self.topic,
+            "sequence_number": self.sequence_number,
+            "requesting_cs": self.requesting_cs
         }
 
     @staticmethod
     def from_repr(raw_data: dict) -> Stream:
         return Stream(
             address=raw_data["address"],
-            topic=raw_data["topic"]
+            topic=raw_data["topic"],
+            sequence_number=raw_data["sequence_number"],
+            requesting_cs=raw_data["requesting_cs"]
         )
 
 
@@ -33,6 +39,7 @@ class Job:
     upstream: List[Stream]
     downstream: List[Stream]
     entry_class: str
+    sequence_number: int
 
     def to_repr(self) -> dict:
         job = {
@@ -40,7 +47,8 @@ class Job:
             "agent_address": self.agent_address,
             "upstream": [],
             "downstream": [],
-            "entry_class": self.entry_class
+            "entry_class": self.entry_class,
+            "sequence_number": self.sequence_number
         }
         for x in self.upstream:
             job["upstream"].append(x.to_repr())
@@ -61,7 +69,8 @@ class Job:
             agent_address=raw_data["agent_address"],
             upstream=upstream,
             downstream=downstream,
-            entry_class=raw_data["entry_class"]
+            entry_class=raw_data["entry_class"],
+            sequence_number=raw_data["sequence_number"],
         )
 
 
@@ -71,12 +80,14 @@ class DeployedJob(Job):
     jar_id: str
     job_id: str
     jar_name: str
+    requesting_cs: bool = False
 
     def to_repr(self) -> dict:
         job = super().to_repr()
         job["jar_id"] = self.jar_id
         job["job_id"] = self.job_id
         job["jar_name"] = self.jar_name
+        job["requesting_cs"] = self.requesting_cs
         return job
 
     @staticmethod
@@ -88,7 +99,9 @@ class DeployedJob(Job):
             upstream=job.upstream,
             downstream=job.downstream,
             entry_class=job.entry_class,
+            sequence_number=job.sequence_number,
             jar_id=raw_data["jar_id"],
             job_id=raw_data["job_id"],
-            jar_name=raw_data["jar_name"]
+            jar_name=raw_data["jar_name"],
+            requesting_cs=raw_data["requesting_cs"]
         )

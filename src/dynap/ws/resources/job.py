@@ -68,8 +68,6 @@ class JobInterface(Resource):
                 if downstream.address != job.agent_address:
                     requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
-            #print(source_topic)
-            #print(sink_topic)
             uploaded_file.save(os.path.join(Common.JOB_PATH, filename))
             spe_address = Common.HTTP + job.agent_address + Common.FLINK_PORT
             file_path = Common.JOB_PATH + "/" + filename
@@ -98,9 +96,11 @@ class JobInterface(Resource):
                     upstream=job.upstream,
                     downstream=job.downstream,
                     entry_class=job.entry_class,
+                    sequence_number=job.sequence_number,
                     jar_id=jar_id,
                     job_id=job_id,
-                    jar_name=filename
+                    jar_name=filename,
+                    requesting_cs=False
                 )
             self._dao_collector.job_dao.save(deployed_job)
         except Exception as e:

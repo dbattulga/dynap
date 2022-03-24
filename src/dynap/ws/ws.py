@@ -10,6 +10,8 @@ from dynap.model.common import Common
 from dynap.ws.resources.job import JobInterfaceBuilder
 from dynap.ws.resources.client import ClientInterfaceBuilder
 from dynap.ws.resources.migration import MigrationInterfaceBuilder
+from dynap.ws.resources.section import SectionInterfaceBuilder
+from dynap.ws.resources.update_stream import UpdateInterfaceBuilder
 
 logger = logging.getLogger("dynap.ws.ws")
 
@@ -26,7 +28,9 @@ class WsInterface:
         active_routes = [
             (JobInterfaceBuilder.routes(dao_collector), "/job"),
             (ClientInterfaceBuilder.routes(dao_collector), "/client"),
-            (MigrationInterfaceBuilder.routes(dao_collector), "/migrate")
+            (MigrationInterfaceBuilder.routes(dao_collector), "/migrate"),
+            (SectionInterfaceBuilder.routes(dao_collector), "/section"),
+            (UpdateInterfaceBuilder.routes(dao_collector), "/update")
         ]
 
         for module_routes, prefix in active_routes:

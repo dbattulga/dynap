@@ -39,6 +39,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeployedJob'
 
+  /section:
+    post:
+      summary: Request for critical section
+      tags:
+        - critical section
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CriticalSection'
+      responses:
+        "200":
+          description: The details of the Job CS request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CriticalSection'
+
+  /update:
+    post:
+      summary: Request for updating a job stream address
+      tags:
+        - update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStream'
+      responses:
+        "202":
+          description: Successfull update.
+          content:
+            application/json:
+              example: {}
+
   /job:
     post:
       summary: Create a new Job.
@@ -239,6 +274,12 @@ components:
         topic:
           type: string
           example: "T-1"
+        sequence_number:
+          type: number
+          example: 1
+        requesting_cs:
+          type: boolean
+          example: false
 
     Job:
       type: object
@@ -268,6 +309,10 @@ components:
           items:
             allOf:
               - $ref: '#/components/schemas/Stream'
+        sequence_number:
+          type: number
+          description: Own sequence number. Starts from 0 + 1
+          example: 1
 
     DeployedJob:
       type: object
@@ -309,6 +354,11 @@ components:
           items:
             allOf:
               - $ref: '#/components/schemas/Stream'
+        requesting_cs:
+          type: boolean
+          description: The critical section indicator of the job, false by default
+          example: false
+
     Client:
       type: object
       description: The MQTT client model.
@@ -329,3 +379,37 @@ components:
           type: string
           description: The sink/downstream address of the client.
           example: "192.168.1.2"
+
+    CriticalSection:
+      type: object
+      description: Critical section request model.
+      properties:
+        job_name:
+          type: string
+          description: The name of a job.
+          example: "A_JOB"
+        agent_address:
+          type: string
+          description: The local host broker address of the client running on
+          example: "192.168.1.1"
+        sequence_number:
+          type: number
+          description: Requesting sequence number of the Job.
+          example: 1
+        topic:
+          type: string
+          description: The topic of a client publishing/subscribing to.
+          example: "T-1"
+
+    UpdateStream:
+      type: object
+      description: Job stream update request model.
+      properties:
+        agent_address:
+          type: string
+          description: The new broker address of the stream
+          example: "192.168.1.1"
+        topic:
+          type: string
+          description: The topic of a client publishing/subscribing to.
+          example: "T-1"
