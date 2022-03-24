@@ -47,7 +47,31 @@ class CriticalSectionManager:
             for downstream in deployed_job.downstream:
                 if downstream.topic == topic:
                     job = deployed_job
+        logger.info(f"Returning assiciated job.")
         return job
+
+    @staticmethod
+    def check_job_exist(daocollector: DaoCollector, job_id: str) -> bool:
+        running = True
+        try:
+            daocollector.job_dao.get(job_id)
+        except DaoEntryNotFound:
+            running = False
+        # daocollector.job_dao.get(job_id)
+        # if DaoEntryNotFound:
+        #     running = False
+        logger.info(f"Returning jobid exist, running is {running}")
+        return running
+
+    @staticmethod
+    def check_job_request_status(daocollector: DaoCollector, job_id: str) -> bool:
+        deployed_job = daocollector.job_dao.get(job_id)
+        if deployed_job.requesting_cs:
+            requesting = True
+        else:
+            requesting = False
+        logger.info(f"Returning jobid exist, requesting is {requesting}")
+        return requesting
 
     @staticmethod
     def get_max_sequence_number(daocollector: DaoCollector, job_name: str) -> int:
@@ -62,11 +86,3 @@ class CriticalSectionManager:
 
         return max(sequence_numbers)
 
-    @staticmethod
-    def check_job_exist(daocollector: DaoCollector, job_id: str) -> bool:
-        running = True
-        try:
-            daocollector.job_dao.get(job_id)
-        except DaoEntryNotFound:
-            running = False
-        return running

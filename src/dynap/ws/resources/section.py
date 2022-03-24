@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 
@@ -28,32 +29,35 @@ class SectionInterface(Resource):
     def post(self):
         logger.info(f"Requesting the critical section.")
         try:
-            json_data: dict = request.json
+            json_data: dict = json.loads(request.json)
             request_data = CriticalSection.from_repr(json_data)
+            logger.info(f"Getting assiciated job.")
             job = CriticalSectionManager.get_associated_job(self._dao_collector, request_data.topic)
+            logger.info(f"Got job by topic, requesting_cs is {job.requesting_cs}")
             jobid = job.job_id
 
-            if CriticalSectionManager.check_job_exist(self._dao_collector, jobid):
-                if job.requesting_cs:
-                    if job.sequence_number > request_data.sequence_number:
+            #if CriticalSectionManager.check_job_exist(self._dao_collector, jobid):
+            if job.requesting_cs:
+                logger.info(f"Got job by id, job exists, entering CS check.")
+                if job.sequence_number > request_data.sequence_number:
+                    pass
+                elif job.sequence_number == request_data.sequence_number:
+                    if job.job_name > request_data.job_name:
                         pass
-                    elif job.sequence_number == request_data.sequence_number:
-                        if job.job_name > request_data.job_name:
-                            pass
-                        else:
-                            while True:
-                                time.sleep(1)
-                                if not CriticalSectionManager.check_job_exist(self._dao_collector, jobid):
-                                    break
-                    elif job.sequence_number < request_data.sequence_number:
+                    else:
                         while True:
                             time.sleep(1)
-                            if not CriticalSectionManager.check_job_exist(self._dao_collector, jobid):
+                            if not CriticalSectionManager.check_job_request_status(self._dao_collector, jobid):
                                 break
-                else:
-                    pass
+                elif job.sequence_number < request_data.sequence_number:
+                    while True:
+                        time.sleep(1)
+                        if not CriticalSectionManager.check_job_request_status(self._dao_collector, jobid):
+                            break
             else:
                 pass
+            #else:
+            #    pass
 
         except (ValueError, KeyError) as e:
             logger.debug("Could not parse provided job data.", exc_info=e)

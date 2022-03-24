@@ -46,6 +46,7 @@ class MigrationInterface(Resource):
             # GET OUR SEQUENCE NUMBER
             our_sequence_number = CriticalSectionManager.get_max_sequence_number(self._dao_collector, job.job_name)
             our_sequence_number += 1
+            job.sequence_number = our_sequence_number
 
             # REQUESTING CS FROM DS AND US
             for upstream in job.upstream:
@@ -55,6 +56,7 @@ class MigrationInterface(Resource):
                     sequence_number=our_sequence_number,
                     topic=upstream.topic
                 )
+                logger.debug(f"Requesting CS from upstream [{upstream.topic}].")
                 req = requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/section", json=json.dumps(cs_upstream.to_repr()))
                 print(req)
 
@@ -65,6 +67,7 @@ class MigrationInterface(Resource):
                     sequence_number=our_sequence_number,
                     topic=downstream.topic
                 )
+                logger.debug(f"Requesting CS from downstream [{downstream.topic}].")
                 req = requests.post(Common.HTTP + downstream.address + Common.AGENT_PORT + "/section", json=json.dumps(cs_downstream.to_repr()))
                 print(req)
 
