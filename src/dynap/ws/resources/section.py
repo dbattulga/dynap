@@ -32,7 +32,7 @@ class SectionInterface(Resource):
             json_data: dict = json.loads(request.json)
             request_data = CriticalSection.from_repr(json_data)
             logger.info(f"Getting assiciated job.")
-            job = CriticalSectionManager.get_associated_job(self._dao_collector, request_data.topic)
+            job = CriticalSectionManager.get_associated_job(self._dao_collector, request_data.topic, request_data.job_name)
             logger.info(f"Got job by topic, requesting_cs is {job.requesting_cs}")
             jobid = job.job_id
 

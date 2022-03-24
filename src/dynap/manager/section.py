@@ -14,7 +14,7 @@ class CriticalSectionManager:
         self._dao_collector = dao_collector
 
     @staticmethod
-    def get_associated_job(daocollector: DaoCollector, topic: str) -> DeployedJob:
+    def get_associated_job(daocollector: DaoCollector, topic: str, job_name: str) -> DeployedJob:
         deployed_jobs = daocollector.job_dao.list()
         upstream = Stream(
             address="localhost",
@@ -42,10 +42,10 @@ class CriticalSectionManager:
         )
         for deployed_job in deployed_jobs:
             for upstream in deployed_job.upstream:
-                if upstream.topic == topic:
+                if upstream.topic == topic and deployed_job.job_name != job_name:
                     job = deployed_job
             for downstream in deployed_job.downstream:
-                if downstream.topic == topic:
+                if downstream.topic == topic and deployed_job.job_name != job_name:
                     job = deployed_job
         logger.info(f"Returning assiciated job.")
         return job
