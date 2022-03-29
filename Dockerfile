@@ -18,5 +18,5 @@ ENV MONGODB_HOST "mongodb"
 ENV PYTHONPATH /app
 
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "dynap.main:flask_application"]
-# CMD ["gunicorn", "-b", "0.0.0.0:5001", "dynap.main:flask_application"]
+# CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5001", "dynap.main:flask_application"]
 
