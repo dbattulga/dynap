@@ -36,7 +36,10 @@ class SectionInterface(Resource):
             logger.info(f"Got job by topic, requesting_cs is {job.requesting_cs}")
             jobid = job.job_id
 
-            #if CriticalSectionManager.check_job_exist(self._dao_collector, jobid):
+            # update sequence number by received topic
+            CriticalSectionManager.update_sequence_number(self._dao_collector, jobid, request_data.topic, request_data.sequence_number)
+
+            # checking if job is in CS
             if job.requesting_cs:
                 logger.info(f"Got job by id, job exists, entering CS check.")
                 if job.sequence_number > request_data.sequence_number:
@@ -56,8 +59,6 @@ class SectionInterface(Resource):
                             break
             else:
                 pass
-            #else:
-            #    pass
 
         except (ValueError, KeyError) as e:
             logger.debug("Could not parse provided job data.", exc_info=e)

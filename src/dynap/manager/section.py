@@ -65,12 +65,15 @@ class CriticalSectionManager:
 
     @staticmethod
     def check_job_request_status(daocollector: DaoCollector, job_id: str) -> bool:
-        deployed_job = daocollector.job_dao.get(job_id)
-        if deployed_job.requesting_cs:
-            requesting = True
-        else:
+        try:
+            deployed_job = daocollector.job_dao.get(job_id)
+            if deployed_job.requesting_cs:
+                requesting = True
+            else:
+                requesting = False
+        except DaoEntryNotFound:
             requesting = False
-        logger.info(f"Returning jobid exist, requesting is {requesting}")
+        logger.info(f"Returning jobid {job_id} exist, requesting is {requesting}")
         return requesting
 
     @staticmethod
@@ -83,6 +86,18 @@ class CriticalSectionManager:
                     sequence_numbers.append(upstream.sequence_number)
                 for downstream in deployed_job.downstream:
                     sequence_numbers.append(downstream.sequence_number)
-
+                sequence_numbers.append(deployed_job.sequence_number)
         return max(sequence_numbers)
 
+    @staticmethod
+    def update_sequence_number(daocollector: DaoCollector, job_id: str, topic: str, sequence_number: int):
+        deployed_job = daocollector.job_dao.get(job_id)
+        for downstream in deployed_job.downstream:
+            if downstream.topic == topic:
+                downstream.sequence_number = sequence_number
+                logger.info(f"Updated the DS topic {topic}, with sequence number {sequence_number}")
+        for upstream in deployed_job.upstream:
+            if upstream.topic == topic:
+                upstream.sequence_number = sequence_number
+                logger.info(f"Updated the US topic {topic}, with sequence number {sequence_number}")
+        daocollector.job_dao.update(deployed_job)

@@ -48,6 +48,7 @@ class MigrationInterface(Resource):
             our_sequence_number += 1
             job.sequence_number = our_sequence_number
 
+
             # REQUESTING CS FROM DS AND US
             for upstream in job.upstream:
                 cs_upstream = CriticalSection(
@@ -71,6 +72,7 @@ class MigrationInterface(Resource):
                 req = requests.post(Common.HTTP + downstream.address + Common.AGENT_PORT + "/section", json=json.dumps(cs_downstream.to_repr()))
                 print(req)
 
+            # START OF THE ACTUAL MIGRATION
             # DELETE US DS FORWARDERS AND STOP OUR JOB
             for upstream in job.upstream:
                 client_id = Client.build_name(upstream.topic)
