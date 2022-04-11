@@ -10,6 +10,7 @@ from dynap.model.common import Common
 from dynap.ws.resources.job import JobInterfaceBuilder
 from dynap.ws.resources.client import ClientInterfaceBuilder
 from dynap.ws.resources.migration import MigrationInterfaceBuilder
+from dynap.ws.resources.mock import MockInterfaceBuilder
 from dynap.ws.resources.section import SectionInterfaceBuilder
 from dynap.ws.resources.update_stream import UpdateInterfaceBuilder
 
@@ -30,7 +31,8 @@ class WsInterface:
             (ClientInterfaceBuilder.routes(dao_collector), "/client"),
             (MigrationInterfaceBuilder.routes(dao_collector), "/migrate"),
             (SectionInterfaceBuilder.routes(dao_collector), "/section"),
-            (UpdateInterfaceBuilder.routes(dao_collector), "/update")
+            (UpdateInterfaceBuilder.routes(dao_collector), "/update"),
+            (MockInterfaceBuilder.routes(dao_collector), "/mock")
         ]
 
         for module_routes, prefix in active_routes:

@@ -27,18 +27,23 @@ def run_conf():
             "agent_address": userjob['agent_address'],
             "upstream": [],
             "downstream": [],
-            "entry_class": userjob['entry_class']
+            "entry_class": userjob['entry_class'],
+            "sequence_number": userjob['sequence_number']
         }
         for i in range(len(userjob['upstream_broker'])):
             upstream = {
                 "address": userjob['upstream_broker'][i],
-                "topic": userjob['upstream_topic'][i]
+                "topic": userjob['upstream_topic'][i],
+                "sequence_number": 0,
+                "requesting_cs": False
             }
             data["upstream"].append(upstream)
         for i in range(len(userjob['downstream_broker'])):
             downstream = {
                 "address": userjob['downstream_broker'][i],
-                "topic": userjob['downstream_topic'][i]
+                "topic": userjob['downstream_topic'][i],
+                "sequence_number": 0,
+                "requesting_cs": False
             }
             data["downstream"].append(downstream)
 
