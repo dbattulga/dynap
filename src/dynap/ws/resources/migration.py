@@ -48,7 +48,6 @@ class MigrationInterface(Resource):
             our_sequence_number += 1
             job.sequence_number = our_sequence_number
 
-
             # REQUESTING CS FROM DS AND US
             for upstream in job.upstream:
                 cs_upstream = CriticalSection(

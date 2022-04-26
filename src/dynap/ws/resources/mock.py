@@ -1,5 +1,6 @@
 import logging
-import socket
+
+from flask import request
 from flask_restful import Resource
 from dynap.dao.collector import DaoCollector
 
@@ -11,7 +12,7 @@ class MockInterfaceBuilder:
     @staticmethod
     def routes(dao_collector: DaoCollector):
         return [
-            (MockInterface, "", (dao_collector, )),
+            (MockInterface, "/<string:job_id>", (dao_collector, )),
         ]
 
 
@@ -21,22 +22,16 @@ class MockInterface(Resource):
         super().__init__()
         self._dao_collector = dao_collector
 
-    def get(self):
+    def post(self, job_id):
         logger.info("Calling Mock endpoint.")
+        json_data: dict = request.json
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.settimeout(0)
-            try:
-                # doesn't even have to be reachable
-                s.connect(('10.255.255.255', 1))
-                IP = s.getsockname()[0]
-            except Exception:
-                IP = '127.0.0.1'
-            finally:
-                s.close()
+            migration_address = json_data.get("migration_address")
+            print(f"Migration address: {migration_address}")
+            print(f"job_id: {job_id}")
         except Exception as e:
             logger.exception(f"Could not parse provided event data.", exc_info=e)
             return {
                        "message": "Something bad happened: could not complete the request."
                    }, 500
-        return {"message": f"{IP}"}, 200
+        return {}, 200

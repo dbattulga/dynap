@@ -2,14 +2,14 @@ version: '3.4'
 
 services:
 
-  agent:
-    build: .
-    volumes:
-      - .:/app
-      - ./jars:/jars
-      - ./config:/config
-    ports:
-      - 5001:5000
+#  agent:
+#    build: .
+#    volumes:
+#      - .:/app
+#      - ./jars:/jars
+#      - ./config:/config
+#    ports:
+#      - 5001:5000
 
   jobmanager:
     image: public.registry.u-hopper.com/flink:1.11.3
