@@ -17,7 +17,7 @@ class ClientManager:
     def on_message(client: mqtt.Client, userdata: Client, message):
         pub_client = mqtt.Client(userdata.client_id, clean_session=False)
         pub_client.connect(userdata.sink_address)
-        pub_client.publish(topic=userdata.topic, payload=str(message.payload.decode("utf-8")), qos=1, retain=True)
+        pub_client.publish(topic=userdata.topic, payload=str(message.payload.decode("utf-8")), qos=2, retain=True)
         #pub_client.disconnect()
         msg = str(message.payload.decode("utf-8"))
         logger.info(f"Client on message {msg}")
