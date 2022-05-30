@@ -52,7 +52,7 @@ class ClientInterface(Resource):
             except DaoEntryNotFound:
                 client = mqtt.Client(mqtt_client.client_id, userdata=mqtt_client, clean_session=False)
                 client.connect(mqtt_client.agent_address)
-                client.subscribe(mqtt_client.topic, qos=1)
+                client.subscribe(mqtt_client.topic, qos=2)
                 client.on_connect = ClientManager.on_connect
                 client.on_message = ClientManager.on_message
                 client.on_disconnect = ClientManager.on_disconnect
