@@ -96,6 +96,7 @@ class MigrationInterface(Resource):
             os.remove(file_path)
 
             # REDIRECTING US/DS WITH MIGRATING ADDRESS
+            # TODO check
             for downstream in job.downstream:
                 update_data_ds = UpdateStream(
                     agent_address=migration_address,

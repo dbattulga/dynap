@@ -70,15 +70,6 @@ class JobInterface(Resource):
                     jobname=job.job_name)
                 if jar_start_response[1] == 200:
                     job_id = jar_start_response[0]["message"]
-                    for downstream in job.downstream:
-                        json_data = {
-                            "client_id": Client.build_name(downstream.topic),
-                            "agent_address": job.agent_address,
-                            "topic": downstream.topic,
-                            "sink_address": downstream.address
-                        }
-                        #if downstream.address != job.agent_address:
-                        requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
                     for upstream in job.upstream:
                         json_data = {
@@ -89,6 +80,17 @@ class JobInterface(Resource):
                         }
                         #if upstream.address != job.agent_address:
                         requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
+
+                    for downstream in job.downstream:
+                        json_data = {
+                            "client_id": Client.build_name(downstream.topic),
+                            "agent_address": job.agent_address,
+                            "topic": downstream.topic,
+                            "sink_address": downstream.address
+                        }
+                        #if downstream.address != job.agent_address:
+                        requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+
                 else:
                     raise Exception("Jar not successfully started.")
             else:
