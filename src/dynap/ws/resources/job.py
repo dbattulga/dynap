@@ -46,27 +46,6 @@ class JobInterface(Resource):
             filename = str(uuid.uuid4()) + '.jar'
             source_topic = []
             sink_topic = []
-            for upstream in job.upstream:
-                source_topic.append(upstream.topic)
-                json_data = {
-                    "client_id": Client.build_name(upstream.topic),
-                    "agent_address": upstream.address,
-                    "topic": upstream.topic,
-                    "sink_address": job.agent_address
-                }
-                # if upstream.address != job.agent_address:
-                requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
-
-            for downstream in job.downstream:
-                sink_topic.append(downstream.topic)
-                json_data = {
-                    "client_id": Client.build_name(downstream.topic),
-                    "agent_address": job.agent_address,
-                    "topic": downstream.topic,
-                    "sink_address": downstream.address
-                }
-                # if downstream.address != job.agent_address:
-                requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
             uploaded_file.save(os.path.join(Common.JOB_PATH, filename))
             spe_address = Common.HTTP + job.agent_address + Common.FLINK_PORT
@@ -89,6 +68,28 @@ class JobInterface(Resource):
                     raise Exception("Jar not successfully started.")
             else:
                 raise Exception("Jar not successfully uploaded.")
+
+            for downstream in job.downstream:
+                sink_topic.append(downstream.topic)
+                json_data = {
+                    "client_id": Client.build_name(downstream.topic),
+                    "agent_address": job.agent_address,
+                    "topic": downstream.topic,
+                    "sink_address": downstream.address
+                }
+                # if downstream.address != job.agent_address:
+                requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+
+            for upstream in job.upstream:
+                source_topic.append(upstream.topic)
+                json_data = {
+                    "client_id": Client.build_name(upstream.topic),
+                    "agent_address": upstream.address,
+                    "topic": upstream.topic,
+                    "sink_address": job.agent_address
+                }
+                # if upstream.address != job.agent_address:
+                requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
 
             deployed_job = DeployedJob(
                     job_name=job.job_name,
