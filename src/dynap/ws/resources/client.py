@@ -116,6 +116,6 @@ class ClientInterfaceId(Resource):
         client.disconnect()
         # client.connect(mqtt_client.agent_address)
         # client.on_disconnect = ClientManager.on_disconnect
-        client.loop_stop()
+        # client.loop_stop()
         self._dao_collector.client_dao.delete(client_id)
         return {}, 200
