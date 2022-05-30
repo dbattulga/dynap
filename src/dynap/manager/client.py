@@ -26,6 +26,7 @@ class ClientManager:
     def on_connect(client: mqtt.Client, userdata: Client, flags, rc):
         if rc == 0:
             client.connected_flag = True
+            client.subscribe(userdata.topic, qos=1)
         else:
             logger.info(f"Bad connection returned, Rode {rc}")
             client.loop_stop()

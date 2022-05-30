@@ -52,7 +52,7 @@ class ClientInterface(Resource):
             except DaoEntryNotFound:
                 client = mqtt.Client(mqtt_client.client_id, userdata=mqtt_client, clean_session=False)
                 client.connect(mqtt_client.agent_address)
-                client.subscribe(mqtt_client.topic, qos=1)
+                # client.subscribe(mqtt_client.topic, qos=1)
                 client.on_connect = ClientManager.on_connect
                 client.on_message = ClientManager.on_message
                 client.on_disconnect = ClientManager.on_disconnect
@@ -112,8 +112,8 @@ class ClientInterfaceId(Resource):
     def delete(self, client_id):
         logger.info(f"Deleting the mqtt client [{client_id}]")
         client = mqtt.Client(client_id, clean_session=False)
-        mqtt_client = self._dao_collector.client_dao.get(client_id)
-        client.connect(mqtt_client.agent_address)
+        #mqtt_client = self._dao_collector.client_dao.get(client_id)
+        #client.connect(mqtt_client.agent_address)
         client.loop_stop()
         client.disconnect()
         self._dao_collector.client_dao.delete(client_id)
