@@ -71,16 +71,6 @@ class JobInterface(Resource):
                 if jar_start_response[1] == 200:
                     job_id = jar_start_response[0]["message"]
 
-                    for upstream in job.upstream:
-                        json_data = {
-                            "client_id": Client.build_name(upstream.topic),
-                            "agent_address": upstream.address,
-                            "topic": upstream.topic,
-                            "sink_address": job.agent_address
-                        }
-                        if upstream.address != job.agent_address:
-                            requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
-
                     for downstream in job.downstream:
                         json_data = {
                             "client_id": Client.build_name(downstream.topic),
@@ -88,8 +78,18 @@ class JobInterface(Resource):
                             "topic": downstream.topic,
                             "sink_address": downstream.address
                         }
-                        if downstream.address != job.agent_address:
-                            requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+                        # if downstream.address != job.agent_address:
+                        requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+
+                    for upstream in job.upstream:
+                        json_data = {
+                            "client_id": Client.build_name(upstream.topic),
+                            "agent_address": upstream.address,
+                            "topic": upstream.topic,
+                            "sink_address": job.agent_address
+                        }
+                        # if upstream.address != job.agent_address:
+                        requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
 
                 else:
                     raise Exception("Jar not successfully started.")
