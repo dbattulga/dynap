@@ -47,6 +47,12 @@ class JobInterface(Resource):
             source_topic = []
             sink_topic = []
 
+            for downstream in job.downstream:
+                sink_topic.append(downstream.topic)
+
+            for upstream in job.upstream:
+                source_topic.append(upstream.topic)
+
             uploaded_file.save(os.path.join(Common.JOB_PATH, filename))
             spe_address = Common.HTTP + job.agent_address + Common.FLINK_PORT
             file_path = Common.JOB_PATH + "/" + filename
@@ -65,7 +71,6 @@ class JobInterface(Resource):
                 if jar_start_response[1] == 200:
                     job_id = jar_start_response[0]["message"]
                     for downstream in job.downstream:
-                        sink_topic.append(downstream.topic)
                         json_data = {
                             "client_id": Client.build_name(downstream.topic),
                             "agent_address": job.agent_address,
@@ -76,7 +81,6 @@ class JobInterface(Resource):
                             requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
                     for upstream in job.upstream:
-                        source_topic.append(upstream.topic)
                         json_data = {
                             "client_id": Client.build_name(upstream.topic),
                             "agent_address": upstream.address,
