@@ -77,8 +77,8 @@ class JobInterface(Resource):
                     "topic": downstream.topic,
                     "sink_address": downstream.address
                 }
-                # if downstream.address != job.agent_address:
-                requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
+                if downstream.address != job.agent_address:
+                    requests.post(Common.HTTP + job.agent_address + Common.AGENT_PORT + "/client", json=json_data)
 
             for upstream in job.upstream:
                 source_topic.append(upstream.topic)
@@ -88,8 +88,8 @@ class JobInterface(Resource):
                     "topic": upstream.topic,
                     "sink_address": job.agent_address
                 }
-                # if upstream.address != job.agent_address:
-                requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
+                if upstream.address != job.agent_address:
+                    requests.post(Common.HTTP + upstream.address + Common.AGENT_PORT + "/client", json=json_data)
 
             deployed_job = DeployedJob(
                     job_name=job.job_name,
